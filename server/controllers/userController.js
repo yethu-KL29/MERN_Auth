@@ -48,15 +48,22 @@ const login=async(req,res,next)=>{
         return res.status(400).json({message:"password is incorrect"});
     }
     const token = jwt.sign({id:existingUser._id},KEY,{
-        expiresIn:"1hr"
+        expiresIn:"30s"
+    })
+    res.cookie(String(existingUser._id),token,{
+        path :"/",
+        expires:new Date(Date.now()+1000*30),
+        httpOnly:true,
+        sameSite:'lax'
     })
     return res.status(200).json({message:"successfull",user:existingUser,token});
 
    
 };
    const verifiedToken=(req,res,next)=>{
-    const headers = req.headers[`authorization`];
-    const token = headers.split(" ")[1];
+    const cookie = req.headers.cookie;
+    const token = cookie.split("=")[1];
+    console.log(token)
     if(!token){
         res.status(404).json({message:"no token found"})
     }
@@ -66,8 +73,26 @@ const login=async(req,res,next)=>{
 
         }
         console.log(user.id)
+        req.id = user.id;
     })
+    next();
 }
+
+ const getUser=async(req,res,next)=>{
+    const userId=req.id;
+    let user;
+    try{
+    user = await User.findById(userId);
+    }catch(e){
+        console.log(e)
+    }
+    if(!user){
+        return   res.status(404).json({message:"user not found"})
+    }
+    return res.status(200).json({user});
+
+ }
 exports.signup=signup;
 exports.login=login;
 exports.verifiedToken=verifiedToken;
+exports.getUser=getUser;

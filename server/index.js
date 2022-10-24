@@ -1,10 +1,11 @@
 const express = require("express");
 const mongoose  = require("mongoose");
 const router =  require("./routes/userRoutes")
-
+const cookieParser = require("cookie-parser")
 const app = express();
 app.use(express.json())
 app.use("/api",router)
+app.use(cookieParser())
 
 
 mongoose.connect("mongodb+srv://Admin:pass123@cluster0.xfjlyln.mongodb.net/MERN_Auth?retryWrites=true&w=majority")
