@@ -1,0 +1,29 @@
+.sign{
+    display: flex;
+    justify-content: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+  
+
+}
+input{
+    height: 50px;
+    border-radius: 10px;
+    background-color: antiquewhite;
+    border-color: blue;
+    color: black;
+}
+label{
+   display: flex;
+   justify-content: flex-start;
+   font-size: large;
+   font-family: 'Courier New', Courier, monospace;
+   font-weight: 900;
+
+}

@@ -8,7 +8,7 @@ const signup = async(req,res,next)=>{
     try {
         existingUser=await User.findOne({email:email})
     } catch (error) {
-        console.log(error)
+        console.log("poda")
     }
     if(existingUser){
         console.log(email)

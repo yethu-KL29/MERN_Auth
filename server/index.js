@@ -2,7 +2,12 @@ const express = require("express");
 const mongoose  = require("mongoose");
 const router =  require("./routes/userRoutes")
 const cookieParser = require("cookie-parser")
+const cors = require("cors");
 const app = express();
+app.use(cors({
+    origin:'http://localhost:3000', 
+    credentials:true,     
+}))
 app.use(express.json())
 app.use("/api",router)
 app.use(cookieParser())
