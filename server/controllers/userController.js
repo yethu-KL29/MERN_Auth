@@ -48,8 +48,12 @@ const login=async(req,res,next)=>{
         return res.status(400).json({message:"password is incorrect"});
     }
     const token = jwt.sign({id:existingUser._id},KEY,{
-        expiresIn:"30s"
+        expiresIn:"35s"
     })
+    // console.log("generated token",token)
+    // if(req.cookies[`${existingUser._id}`]){
+    //     req.cookies[`${existingUser._id}`]=""
+    // }
     res.cookie(String(existingUser._id),token,{
         path :"/",
         expires:new Date(Date.now()+1000*30),
@@ -92,7 +96,36 @@ const login=async(req,res,next)=>{
     return res.status(200).json({user});
 
  }
+ const refreshToken=(req,res,next)=>{
+    const cookie = req.headers.cookie;
+    const prevToken = cookie.split("=")[1];
+    if(!prevToken){
+        res.status(404).json({message:"no token found"})
+    }
+    jwt.verify(String(token),KEY,(err,user)=>{
+        if(err){
+         return   res.status(404).json({message:"Auth failed"})
+
+        }
+       res.clearCookie(`${user.id}`)
+       req.cookies[`${user.id}`]=""
+       const token = jwt.sign({id:user.id},KEY,{
+        expiresIn:"35s"
+    })
+    console.log("retoken",token)
+    res.cookie(String(user.id),token,{
+        path :"/",
+        expires:new Date(Date.now()+1000*30),
+        httpOnly:true,
+        sameSite:'lax'
+    })
+    
+    })
+    next()
+   
+ }
 exports.signup=signup;
 exports.login=login;
 exports.verifiedToken=verifiedToken;
 exports.getUser=getUser;
+exports.refreshToken=refreshToken
