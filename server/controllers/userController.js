@@ -47,7 +47,7 @@ const login=async(req,res,next)=>{
     if(!isPasswordCorrect){
         return res.status(400).json({message:"password is incorrect"});
     }
-    const token = jwt.sign({id:existingUser._id},KEY,{
+    const token = jwt.sign({id:existingUser._id},process.env.KEY,{
         expiresIn:"1hr"
     })
     // console.log("generated token",token)
@@ -71,7 +71,7 @@ const login=async(req,res,next)=>{
     if(!token){
         res.status(404).json({message:"no token found"})
     }
-    jwt.verify(String(token),KEY,(err,user)=>{
+    jwt.verify(String(token),process.env.KEY,(err,user)=>{
         if(err){
          return   res.status(404).json({message:"invalid tokenfound"})
 
@@ -126,8 +126,33 @@ const login=async(req,res,next)=>{
    
    
 //  }
+
+const Logout=(req,res,next)=>{
+    const cookie = req.headers.cookie;
+    const prevToken = cookie.split("=")[1];
+    if(!prevToken){
+        res.status(404).json({message:"no token found"})
+    }
+    jwt.verify(String(prevToken),KEY,(err,user)=>{
+        if(err){
+            console.log(err)
+         return   res.status(404).json({message:"Auth failed"})
+
+        }
+       res.clearCookie(`${user.id}`)
+       req.cookies[`${user.id}`]=""
+      
+       return res.status(200).json({message:"logeedout"});
+  
+    })
+   
+   
+}
+
+
 exports.signup=signup;
 exports.login=login;
 exports.verifiedToken=verifiedToken;
 exports.getUser=getUser;
 // exports.refreshToken=refreshToken
+exports.Logout=Logout;
